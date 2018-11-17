@@ -1,11 +1,20 @@
 import React, { Component } from "react";
-import { Editor, EditorState, RichUtils } from "draft-js";
+import { EditorState, RichUtils } from "draft-js";
+import Editor from "draft-js-plugins-editor";
+import createEmojiPlugin from "draft-js-emoji-plugin";
+import "draft-js-emoji-plugin/lib/plugin.css";
 
 const styleMap = {
   STRIKETHROUGH: {
     textDecoration: "line-through"
   }
 };
+
+// const imagePlugin = createImagePlugin();
+
+const emojiPlugin = createEmojiPlugin();
+
+const { EmojiSuggestions, EmojiSelect } = emojiPlugin;
 
 class App extends Component {
   constructor() {
@@ -20,7 +29,6 @@ class App extends Component {
   };
 
   handleKeyCommand = command => {
-    console.log(command);
     const newState = RichUtils.handleKeyCommand(
       this.state.editorState,
       command
@@ -70,7 +78,10 @@ class App extends Component {
           onChange={this.onChange}
           customStyleMap={styleMap}
           placeholder="Tell us story"
+          plugins={[emojiPlugin]}
         />
+        <EmojiSuggestions />
+        <EmojiSelect />
       </div>
     );
   }
