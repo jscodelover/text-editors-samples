@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { EditorState, RichUtils } from "draft-js";
 import Editor from "draft-js-plugins-editor";
 import createEmojiPlugin from "draft-js-emoji-plugin";
+import createHashtagPlugin from "draft-js-hashtag-plugin";
 import "draft-js-emoji-plugin/lib/plugin.css";
+import "draft-js-hashtag-plugin/lib/plugin.css";
 
 const styleMap = {
   STRIKETHROUGH: {
@@ -13,6 +15,7 @@ const styleMap = {
 // const imagePlugin = createImagePlugin();
 
 const emojiPlugin = createEmojiPlugin();
+const hashtagPlugin = createHashtagPlugin();
 
 const { EmojiSuggestions, EmojiSelect } = emojiPlugin;
 
@@ -72,16 +75,16 @@ class App extends Component {
         <button onClick={this.onUnderlineClick}>Underline</button>
         <button onClick={this.onlineThroughClick}>Strike Through</button>
         <button onClick={this.onToggleCode}>Code Block</button>
+        <EmojiSelect />
         <Editor
           editorState={this.state.editorState}
           handleKeyCommand={this.handleKeyCommand}
           onChange={this.onChange}
           customStyleMap={styleMap}
           placeholder="Tell us story"
-          plugins={[emojiPlugin]}
+          plugins={[emojiPlugin, hashtagPlugin]}
         />
         <EmojiSuggestions />
-        <EmojiSelect />
       </div>
     );
   }
