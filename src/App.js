@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import { Editor, EditorState, RichUtils } from "draft-js";
 
+const styleMap = {
+  STRIKETHROUGH: {
+    textDecoration: "line-through"
+  }
+};
+
 class App extends Component {
   constructor() {
     super();
@@ -34,6 +40,12 @@ class App extends Component {
     );
   };
 
+  onlineThroughClick = () => {
+    this.onChange(
+      RichUtils.toggleInlineStyle(this.state.editorState, "STRIKETHROUGH")
+    );
+  };
+
   onToggleCode = () => {
     this.onChange(RichUtils.toggleCode(this.state.editorState));
   };
@@ -50,11 +62,14 @@ class App extends Component {
         }}
       >
         <button onClick={this.onUnderlineClick}>Underline</button>
+        <button onClick={this.onlineThroughClick}>Strike Through</button>
         <button onClick={this.onToggleCode}>Code Block</button>
         <Editor
           editorState={this.state.editorState}
           handleKeyCommand={this.handleKeyCommand}
           onChange={this.onChange}
+          customStyleMap={styleMap}
+          placeholder="Tell us story"
         />
       </div>
     );
