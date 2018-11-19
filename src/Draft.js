@@ -1,5 +1,5 @@
 import React from "react";
-import { Editor, EditorState, RichUtils } from "draft-js";
+import { Editor, EditorState, RichUtils, convertToRaw } from "draft-js";
 import "draft-js/dist/Draft.css";
 import "./Draft.css";
 
@@ -9,7 +9,11 @@ class RichEditorExample extends React.Component {
     this.state = { editorState: EditorState.createEmpty() };
 
     this.focus = () => this.refs.editor.focus();
-    this.onChange = editorState => this.setState({ editorState });
+    this.onChange = editorState => {
+      const contentState = editorState.getCurrentContent();
+      console.log("content state", convertToRaw(contentState));
+      this.setState({ editorState });
+    };
 
     this.handleKeyCommand = command => this._handleKeyCommand(command);
     this.onTab = e => this._onTab(e);
