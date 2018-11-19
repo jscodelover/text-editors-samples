@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { EditorState, RichUtils } from "draft-js";
+import { EditorState, RichUtils, convertToRaw, convertFromRaw } from "draft-js";
 import Editor from "draft-js-plugins-editor";
 import createEmojiPlugin from "draft-js-emoji-plugin";
 import createHashtagPlugin from "draft-js-hashtag-plugin";
@@ -123,9 +123,19 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      editorState: EditorState.createEmpty(),
+      // editorState: EditorState.createEmpty(),
       suggestions: user
     };
+
+    const content = window.localStorage.getItem("content");
+
+    if (content) {
+      this.state.editorState = EditorState.createWithContent(
+        convertFromRaw(JSON.parse(content))
+      );
+    } else {
+      this.state.editorState = EditorState.createEmpty();
+    }
   }
 
   onSearchChange = ({ value }) => {
@@ -135,7 +145,16 @@ class App extends Component {
   };
 
   onChange = editorState => {
+    const contentState = editorState.getCurrentContent();
+    this.saveContent(contentState);
     this.setState({ editorState });
+  };
+
+  saveContent = content => {
+    window.localStorage.setItem(
+      "content",
+      JSON.stringify(convertToRaw(content))
+    );
   };
 
   handleKeyCommand = command => {
