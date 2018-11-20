@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { EditorState, RichUtils, convertToRaw, convertFromRaw } from "draft-js";
-import Editor from "draft-js-plugins-editor";
+import * as React from "react";
+import { EditorState, RichUtils, convertToRaw } from "draft-js";
+import Editor, { createEditorStateWithText } from "draft-js-plugins-editor";
 import createEmojiPlugin from "draft-js-emoji-plugin";
 import createHashtagPlugin from "draft-js-hashtag-plugin";
 import createMentionPlugin, {
@@ -30,7 +30,7 @@ import "draft-js-inline-toolbar-plugin/lib/plugin.css";
 import "draft-js/dist/Draft.css";
 import "./App.css";
 
-class HeadlinesPicker extends Component {
+class HeadlinesPicker extends React.Component {
   componentDidMount() {
     setTimeout(() => {
       window.addEventListener("click", this.onWindowClick);
@@ -61,7 +61,7 @@ class HeadlinesPicker extends Component {
   }
 }
 
-class HeadlinesButton extends Component {
+class HeadlinesButton extends React.Component {
   // When using a click event inside overridden content, mouse down
   // events needs to be prevented so the focus stays in the editor
   // and the toolbar remains visible  onMouseDown = (event) => event.preventDefault()
@@ -119,23 +119,30 @@ const { InlineToolbar } = inlineToolbarPlugin;
 const { EmojiSuggestions, EmojiSelect } = emojiPlugin;
 const { MentionSuggestions } = mentionPlugin;
 
-class App extends Component {
+class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      // editorState: EditorState.createEmpty(),
+      editorState: EditorState.createEmpty(),
       suggestions: user
     };
 
-    const content = window.localStorage.getItem("content");
+    // const content = window.localStorage.getItem("content");
 
-    if (content) {
-      this.state.editorState = EditorState.createWithContent(
-        convertFromRaw(JSON.parse(content))
-      );
-    } else {
-      this.state.editorState = EditorState.createEmpty();
-    }
+    // if (content) {
+    //   this.state.editorState = EditorState.createWithContent(
+    //     convertFromRaw(JSON.parse(content))
+    //   );
+    // } else {
+    //   this.state.editorState = EditorState.createEmpty();
+    // }
+  }
+
+  componentDidMount() {
+    fetch("https://5bf270bda60fe600134cdf37.mockapi.io/baseMessages")
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
   }
 
   onSearchChange = ({ value }) => {
@@ -145,16 +152,32 @@ class App extends Component {
   };
 
   onChange = editorState => {
-    const contentState = editorState.getCurrentContent();
-    this.saveContent(contentState);
+    console.log("change");
     this.setState({ editorState });
   };
 
   saveContent = content => {
-    window.localStorage.setItem(
-      "content",
-      JSON.stringify(convertToRaw(content))
-    );
+    // window.localStorage.setItem(
+    //   "content",
+    //   JSON.stringify(convertToRaw(content))
+    // );
+    console.log({ ...convertToRaw(content) });
+    let data = {
+      id: "8172hinedw98suikjd",
+      userId: "skdjbcsk9890o-ihbdkc",
+      post: { ...convertToRaw(content) }
+    };
+
+    fetch("https://5bf270bda60fe600134cdf37.mockapi.io/baseMessages", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
   };
 
   handleKeyCommand = command => {
@@ -169,6 +192,14 @@ class App extends Component {
     }
 
     return "not-handled";
+  };
+
+  onKeyUp = event => {
+    console.log(event.keyCode);
+    if (event.key === "Enter") {
+      this.saveContent(this.state.editorState.getCurrentContent());
+      this.setState({ editorState: createEditorStateWithText(" ") });
+    }
   };
 
   onUnderlineClick = () => {
@@ -192,11 +223,13 @@ class App extends Component {
   };
 
   render() {
+    const { editorState } = this.state;
+    console.log(convertToRaw(editorState.getCurrentContent()));
     return (
       <div>
-        <button onClick={this.onUnderlineClick}>Underline</button>
+        {/* <button onClick={this.onUnderlineClick}>Underline</button>
         <button onClick={this.onlineThroughClick}>Strike Through</button>
-        <button onClick={this.onToggleCode}>Code Block</button>
+        <button onClick={this.onToggleCode}>Code Block</button> */}
         <EmojiSelect />
         <div
           style={{
@@ -207,9 +240,10 @@ class App extends Component {
             margin: "10px"
           }}
           onClick={this.focus}
+          onKeyUp={this.onKeyUp}
         >
           <Editor
-            editorState={this.state.editorState}
+            editorState={editorState}
             handleKeyCommand={this.handleKeyCommand}
             onChange={this.onChange}
             customStyleMap={styleMap}
@@ -232,7 +266,7 @@ class App extends Component {
           <InlineToolbar>
             {// may be use React.Fragment instead of div to improve perfomance after React 16
             externalProps => (
-              <div>
+              <React.Fragment>
                 <BoldButton {...externalProps} />
                 <ItalicButton {...externalProps} />
                 <UnderlineButton {...externalProps} />
@@ -243,7 +277,7 @@ class App extends Component {
                 <OrderedListButton {...externalProps} />
                 <BlockquoteButton {...externalProps} />
                 <CodeBlockButton {...externalProps} />
-              </div>
+              </React.Fragment>
             )}
           </InlineToolbar>
         </div>
