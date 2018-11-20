@@ -153,6 +153,7 @@ class App extends React.Component {
 
   onChange = editorState => {
     console.log("change");
+    console.log(convertToRaw(editorState.getCurrentContent()));
     this.setState({ editorState });
   };
 
@@ -224,7 +225,6 @@ class App extends React.Component {
 
   render() {
     const { editorState } = this.state;
-    console.log(convertToRaw(editorState.getCurrentContent()));
     return (
       <div>
         {/* <button onClick={this.onUnderlineClick}>Underline</button>
