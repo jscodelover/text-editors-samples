@@ -28,7 +28,7 @@ import "draft-js-hashtag-plugin/lib/plugin.css";
 import "draft-js-mention-plugin/lib/plugin.css";
 import "draft-js-inline-toolbar-plugin/lib/plugin.css";
 import "draft-js/dist/Draft.css";
-import "./App.css";
+import "./Draft2.css";
 
 class HeadlinesPicker extends React.Component {
   componentDidMount() {
@@ -152,7 +152,7 @@ class App extends React.Component {
   };
 
   onChange = editorState => {
-    console.log("change");
+    console.log(editorState);
     console.log(convertToRaw(editorState.getCurrentContent()));
     this.setState({ editorState });
   };
@@ -227,9 +227,9 @@ class App extends React.Component {
     const { editorState } = this.state;
     return (
       <div>
-        {/* <button onClick={this.onUnderlineClick}>Underline</button>
+        <button onClick={this.onUnderlineClick}>Underline</button>
         <button onClick={this.onlineThroughClick}>Strike Through</button>
-        <button onClick={this.onToggleCode}>Code Block</button> */}
+        <button onClick={this.onToggleCode}>Code Block</button>
         <EmojiSelect />
         <div
           style={{
